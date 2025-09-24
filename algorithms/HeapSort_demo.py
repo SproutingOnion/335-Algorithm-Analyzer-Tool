@@ -1,5 +1,8 @@
+import time
+
 def heap_sort(arr):
 # heap sort would be in place as wrst case efficiency with
+    start = time.perf_counter()
     def sift_down(a, start, end):
         root = start
         while (left := 2 * root + 1) <= end:
@@ -23,7 +26,10 @@ def heap_sort(arr):
     for end in range(n - 1, 0, -1):
         a[0], a[end] = a[end], a[0]
         sift_down(a, 0, end -1)
+    end = time.perf_counter()
+    print(f"[Heap] sort in {end - start:.6f} sec")
     return a
+
 
 
 
