@@ -1,4 +1,7 @@
-def bubble_sort(arr):            #defining a bubble sort fn that takes a list as an input
+import time
+
+def bubble_sort(arr): 
+    start = time.perf_counter()           #defining a bubble sort fn that takes a list as an input
     n = len(arr)
     for i in range(n):
         swapped = False
@@ -8,10 +11,7 @@ def bubble_sort(arr):            #defining a bubble sort fn that takes a list as
                 swapped = True
         if not swapped:
             break
+    end = time.perf_counter()
+    print(f"[Bubble] sort in {end - start:.6f} sec.")    
     return arr
 
-if __name__=="__main__":
-    data = [64, 34, 25, 12, 22, 11, 90]
-    print("Original Unsorted:", data)
-    sorted_data = bubble_sort(data)
-    print("Sorted Date:", data)
