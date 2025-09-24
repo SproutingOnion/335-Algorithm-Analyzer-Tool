@@ -2,15 +2,15 @@
 from typing import List, Dict, Tuple
 import random
 import time
-from algorithm.radix_demo import *
-from algorithm.HeapSort_demo import *
-from algorithm.mergesort_demo import *
-from algorithm.QuickSelectSort_Demo import *
-from algorithm.QuickSort_demo import *
-from algorithm.bubblesort_demo import *
-from algorithm.BucketSort_Demo import *
-from algorithm.countingsort_demo import *
-from algorithm.insertsort_demo import *
+from algorithms.radix_demo import *
+from algorithms.HeapSort_demo import *
+from algorithms.mergesort_demo import *
+from algorithms.QuickSelectSort_Demo import *
+from algorithms.QuickSort_demo import *
+from algorithms.bubblesort_demo import *
+from algorithms.BucketSort_Demo import *
+from algorithms.countingsort_demo import *
+from algorithms.insertsort_demo import *
 
 
 #Demo to test out for calling functions from files and using random int generators
