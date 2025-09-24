@@ -1,4 +1,7 @@
+import time
+
 def insertion_sort(arr):
+    start = time.perf_counter()
     n = len(arr)
     for i in range(1,n):
         key = arr[i]
@@ -8,12 +11,8 @@ def insertion_sort(arr):
             j -= 1
 
         arr[j + 1] = key
+    end = time.perf_counter()
+    print(f"[Insert] sort in {end-start:.6f} sec.")    
     return arr
 
-#test
-if __name__ == "__main__":
-    #data = [13, 12, 11, 5, 6]
-    data = [4, -2, -2, 8, 3, 1]
-    print("Unsorted Data:", data)
-    sorted_data = insertion_sort(data)
-    print("Sorted Data:", sorted_data)
+
