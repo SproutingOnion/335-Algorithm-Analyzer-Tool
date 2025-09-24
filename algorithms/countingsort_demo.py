@@ -1,4 +1,7 @@
+import time
+
 def counting_sort(arr):
+    start = time.perf_counter()
     if not arr:
         return []
     max_val = max(arr)
@@ -14,11 +17,7 @@ def counting_sort(arr):
     for i, freq in enumerate(count):
         value = i + min_val
         output.extend([value] * freq)
-
+    end = time.perf_counter()
+    print(f"[Counting] sort in {end-start:.6f} sec.")
     return output
 
-if __name__ == "__main__":
-    data = [4, -2, -2, 8, 3, 1]
-    print("Unsorted Data:", data)
-    sorted_data = counting_sort(data)
-    print("Sorted Data:", sorted_data)
