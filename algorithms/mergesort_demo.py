@@ -21,8 +21,3 @@ def merge(left, right):
     result.extend(right[j:])
     return result
 
-if __name__ == "__main__":
-    data = [13, 12, 11, 5, 6]
-    print("Unsorted Data:", data)
-    sorted_data = merge_sort(data)
-    print("Sorted Data:", sorted_data)
