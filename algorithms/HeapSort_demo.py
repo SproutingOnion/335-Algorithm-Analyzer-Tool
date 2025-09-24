@@ -30,8 +30,3 @@ def heap_sort(arr):
 
 
 
-if __name__ == "__main__":
-    data = [13, 12, 11, 5, 6]
-    print("Unsorted Data:", data)
-    sorted_data = heap_sort(data)
-    print("Sorted Data:", sorted_data)
