@@ -117,38 +117,3 @@ def sort_orders_by_id(orders: List[Dict], key: str = "order_id", base: int = 10)
     return sorted_orders
 
 
-# Demo
-if __name__ == "__main__":
-    # 1 Basic integers with negative values
-    data = [170, -3, 75, 90, 802, 24, -100, 2, 66, 0, -1]
-    print("Original Data: ", data)
-    sorted_data = radix_sort_lsd(data, base=10)
-    print("Sorted Data: ", sorted_data)
-    assert sorted_data == sorted(data)
-
-    # 2 Real world order records with stable ties
-    rng = random.Random(42)
-    orders = []
-    for i in range(15):
-        orders.append({
-            "order_id": rng.randint(1000, 100500),
-            "line_item": i,
-            "desc": f"Item-{i}"
-        })
-
-    for extra in [101010, 101010, 101010]:
-        orders.append({"order_id": extra, "line_item": len(orders), "desc": "TIE"})
-
-    print("\nFirst 6 Unsorted orders (id, line_item):",
-          [(o["order_id"], o["line_item"]) for o in orders[:6]])
-          
-    sorted_orders = sort_orders_by_id(orders, key="order_id", base=10)
-
-    print("\nFirst 10 unsorted orders (id, line_item):",
-          [(o["order_id"], o["line_item"]) for o in orders[:10]])
-    
-    # Check correctness against default sort
-    expected = sorted(orders, key = lambda r: r["order_id"])
-    assert [(o["order_id"], o["line_item"]) for o in sorted_orders] == \
-           [(o["order_id"], o["line_item"]) for o in expected]
-    print("\n[CHECK] Radix record-sort matches Python's stable sort.")
