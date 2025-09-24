@@ -1,4 +1,6 @@
+import time
 def quick_sort(arr):
+    start = time.perf_counter()
     def partition(low, high):
         pivot = arr [(low + high) // 2]
         i = low
@@ -19,11 +21,8 @@ def quick_sort(arr):
             sort(low, j)
             sort(i, high)
     sort(0, len(arr) - 1)
+    end = time.perf_counter()
+    print(f"[Quick] sort in {end - start:.6f} sec.")
     return arr
 
 
-if __name__ == "__main__":
-    data = [13, 12, 11, 5, 6]
-    print("Unsorted Data:", data)
-    sorted_data = quick_sort(data)
-    print("Sorted Data:", sorted_data)
