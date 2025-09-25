@@ -1,4 +1,5 @@
-#Main file for UI interface and calling sorting algorithms
+# Main file for UI interface and calling sorting algorithms
+VISUALIZE = True
 from typing import Callable, List, Dict, Tuple
 import random
 import pygame
@@ -26,14 +27,17 @@ LIST_SIZE_RANGE = (10, 50)  # random size each run
 INT_RANGE = (1, 200)
 FLOAT_DECIMALS_TO_PRINT = 3  # only for preview printed to console
 
+
 # --------- Data Generators ---------
 def make_int_list() -> List[int]:
     n = random.randint(*LIST_SIZE_RANGE)
     return [random.randint(*INT_RANGE) for _ in range(n)]
 
+
 def make_float_list() -> List[float]:
     n = random.randint(*LIST_SIZE_RANGE)
     return [random.random() for _ in range(n)]
+
 
 # --------- Wrappers to standardize timing & output ---------
 def run_and_time(func: Callable[..., any], *args, **kwargs) -> Tuple[any, float]:
@@ -42,33 +46,50 @@ def run_and_time(func: Callable[..., any], *args, **kwargs) -> Tuple[any, float]
     elapsed = time.perf_counter() - start
     return result, elapsed
 
+
 def run_merge_sort() -> Tuple[str, float]:
     data = make_int_list()
+    if VISUALIZE:
+        from algorithms.mergesort_demo import merge_sort_viz
+        merge_sort_viz(data.copy())
     sorted_list, t = run_and_time(merge_sort, data)
     print("\n[Merge Sort] input:", data)
     print("[Merge Sort] output:", sorted_list)
     print(f"[Merge Sort] time: {t:.6f} sec")
     return "Merge Sort", t
 
+
 def run_radix_sort() -> Tuple[str, float]:
     data = make_int_list()
     base = 10
+    if VISUALIZE:
+        from algorithms.radix_demo import radix_sort_lsd_nonneg_viz
+        radix_sort_lsd_nonneg_viz(data.copy())
     sorted_list, t = run_and_time(radix_sort_lsd_nonneg, data, base)
     print("\n[Radix LSD] input:", data)
     print("[Radix LSD] output:", sorted_list)
     print(f"[Radix LSD] base={base} time: {t:.6f} sec")
     return "Radix Sort (LSD)", t
 
+
 def run_bubble_sort() -> Tuple[str, float]:
     data = make_int_list()
+    if VISUALIZE:
+        from algorithms.bubblesort_demo import bubble_sort_viz
+        bubble_sort_viz(data.copy())
     sorted_list, t = run_and_time(bubble_sort, data)
     print("\n[Bubble Sort] input:", data)
     print("[Bubble Sort] output:", sorted_list)
     print(f"[Bubble Sort] time: {t:.6f} sec")
     return "Bubble Sort", t
 
+
 def run_bucket_sort() -> Tuple[str, float]:
     data = make_float_list()
+    if VISUALIZE:
+        from algorithms.BucketSort_Demo import bucket_sort_viz
+        bucket_sort_viz(data.copy())
+
     sorted_list, t = run_and_time(bucket_sort, data)
     # print floats briefly
     preview_in = [round(x, FLOAT_DECIMALS_TO_PRINT) for x in data]
@@ -78,45 +99,68 @@ def run_bucket_sort() -> Tuple[str, float]:
     print(f"[Bucket Sort] time: {t:.6f} sec")
     return "Bucket Sort (floats)", t
 
+
 def run_counting_sort() -> Tuple[str, float]:
     data = make_int_list()
+    if VISUALIZE:
+        from algorithms.countingsort_demo import counting_sort_viz
+        counting_sort_viz(data.copy())
     sorted_list, t = run_and_time(counting_sort, data)
     print("\n[Counting Sort] input:", data)
     print("[Counting Sort] output:", sorted_list)
     print(f"[Counting Sort] time: {t:.6f} sec")
     return "Counting Sort", t
 
+
 def run_insertion_sort() -> Tuple[str, float]:
     data = make_int_list()
+    if VISUALIZE:
+        from algorithms.insertsort_demo import insertion_sort_viz
+        insertion_sort_viz(data.copy())
     sorted_list, t = run_and_time(insertion_sort, data)
     print("\n[Insertion Sort] input:", data)
     print("[Insertion Sort] output:", sorted_list)
     print(f"[Insertion Sort] time: {t:.6f} sec")
     return "Insertion Sort", t
 
+
 def run_heap_sort() -> Tuple[str, float]:
     data = make_int_list()
+    if VISUALIZE:
+        from algorithms.HeapSort_demo import heap_sort_viz
+        heap_sort_viz(data.copy())
     sorted_list, t = run_and_time(heap_sort, data)
     print("\n[Heap Sort] input:", data)
     print("[Heap Sort] output:", sorted_list)
     print(f"[Heap Sort] time: {t:.6f} sec")
     return "Heap Sort", t
 
+
 def run_quick_sort() -> Tuple[str, float]:
     data = make_int_list()
+    if VISUALIZE:
+        from algorithms.QuickSort_demo import quick_sort_viz
+        quick_sort_viz(data.copy())
     sorted_list, t = run_and_time(quick_sort, data)
     print("\n[Quick Sort] input:", data)
     print("[Quick Sort] output:", sorted_list)
     print(f"[Quick Sort] time: {t:.6f} sec")
     return "Quick Sort", t
 
+
 def run_quick_select_median() -> Tuple[str, float]:
     data = make_int_list()
     k = len(data) // 2
-    _, t = run_and_time(timed_quick_select, data, k)
+    if VISUALIZE:
+        from algorithms.QuickSelectSort_Demo import quick_select_viz
+        quick_select_viz(data.copy(), k)
+    value, t = run_and_time(quick_select, data, 0, len(data) - 1, k)
     print("\n[Quick Select] median k =", k, "input:", data)
+    print("[Quick Select] value:", value)
     print(f"[Quick Select] time: {t:.6f} sec")
     return "Quick Select (median)", t
+
+
 
 MENU_ITEMS = [
     ("Merge Sort", run_merge_sort, ""),
@@ -129,6 +173,7 @@ MENU_ITEMS = [
     ("Quick Sort", run_quick_sort, ""),
     ("Quick Select (median)", run_quick_select_median, "Not a full sort"),
 ]
+
 
 def main():
     pygame.init()
@@ -238,6 +283,7 @@ def main():
 
     pygame.quit()
 
+
 if __name__ == "__main__":
     main()
 
@@ -249,9 +295,9 @@ if __name__ == "__main__":
 #    #Filling the list with numbers from 1 - 200. May be increased if need to
 #    random_filled_list = [random.randint(1, 200) for i in range(random_index_size)] #Random int filled list
 #    random_filled_float_list = [random.random() for i in range(random_index_size)] #Random float filled list
-   
+
 #    base = 10 #Printing purposes but it shows base number for radix sort. May be user inputted if necessary
-   
+
 #    #Mergre sort time counter in main due to recursion in algorithm
 #    start = time.perf_counter()
 #    sorted = merge_sort(random_filled_list)
@@ -271,8 +317,7 @@ if __name__ == "__main__":
 #    print(insertion_sort(random_filled_list))
 
 #    print(heap_sort(random_filled_list))
-   
+
 #    print(quick_sort(random_filled_list))
 
 #    timed_quick_select(random_filled_list,  len(random_filled_list) // 2)
-   
