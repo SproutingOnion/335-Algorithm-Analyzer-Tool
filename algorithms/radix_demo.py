@@ -120,7 +120,9 @@ def sort_orders_by_id(orders: List[Dict], key: str = "order_id", base: int = 10)
     sorted_orders = [orders[i] for i in index]
     return sorted_orders
 
-SPEED = 0.03  # pause between frames (seconds)
+SPEED = 0.03
+PAUSE = {'v': True}
+FIG = {'obj': None}
 
 def draw(arr, highlight=()):
     plt.cla()
@@ -130,95 +132,170 @@ def draw(arr, highlight=()):
             bars[i].set_color('r')
     plt.title("Radix Sort (LSD)")
     plt.pause(SPEED)
+    # pause loop (Space toggles)
+    while PAUSE['v'] and FIG['obj'] is not None and plt.fignum_exists(FIG['obj'].number):
+        plt.pause(0.05)
 
-def radix_sort_lsd_nonneg_viz(arr, base=10):
+def radix_sort_lsd_viz(arr, base=10):
     plt.figure()
+    fig = plt.gcf()
+
+    FIG['obj'] = fig
+    fig.canvas.mpl_connect('close_event', lambda e: FIG.update(obj=None))
+
+    def on_key(e):
+        k = (e.key or '')
+        if k == ' ' or k.lower() == 'space':
+            PAUSE['v'] = not PAUSE['v']     # play/pause
+        elif k.lower() in ('r', 'q', 'escape', 'esc'):
+            plt.close(FIG['obj'] if FIG['obj'] is not None else fig)  # reset/quit
+
+    fig.canvas.mpl_connect('key_press_event', on_key)
+    ...
+
+
+    PAUSE['v'] = True
+    try:
+        plt.gcf().canvas.manager.set_window_title(
+            "Radix (LSD, non-negative) — Space=Play/Pause, R=Reset, Q/Esc=Quit"
+        )
+    except Exception:
+        pass
+
+    PAUSE['v'] = True                       # start paused
     draw(arr)
-    if not arr:
+    if not plt.fignum_exists(fig.number):
+        return arr
+
+    if not arr or any(x < 0 for x in arr):
         plt.show()
         return arr
-    if any(x < 0 for x in arr):
-        plt.show()
-        return arr  # nonneg version, skip if has negatives
 
-    max_val = max(arr)
-    exp = 1
     n = len(arr)
     out = [0] * n
+    max_val = max(arr)
+    exp = 1
 
     while max_val // exp > 0:
         count = [0] * base
         for x in arr:
-            digit = (x // exp) % base
-            count[digit] += 1
+            count[(x // exp) % base] += 1
+
         for i in range(1, base):
             count[i] += count[i - 1]
+
         for i in range(n - 1, -1, -1):
-            digit = (arr[i] // exp) % base
-            count[digit] -= 1
-            pos = count[digit]
+            d = (arr[i] // exp) % base
+            count[d] -= 1
+            pos = count[d]
             out[pos] = arr[i]
-            draw(out, (pos,))  # show placement in this digit pass
+            draw(out, (pos,))              # show placement
+            if not plt.fignum_exists(fig.number):
+                return arr
+
         arr[:] = out
-        draw(arr)             # show after finishing this digit
+        draw(arr)                           # after finishing this digit
+        if not plt.fignum_exists(fig.number):
+            return arr
         exp *= base
 
-    draw(arr)
+    draw(arr)                                # final frame
+    if not plt.fignum_exists(fig.number):
+        return arr
     plt.show()
     return arr
 
 def radix_sort_lsd_viz(arr, base=10):
-    # handles negatives by splitting
     plt.figure()
+    fig = plt.gcf()
+
+    def on_key(e):
+        if e.key == ' ':
+            PAUSE['v'] = not PAUSE['v']     # play/pause
+        elif e.key in ('r', 'escape', 'q'):
+            plt.close(fig)                  # reset/quit
+
+    fig.canvas.mpl_connect('key_press_event', on_key)
+    try:
+        plt.gcf().canvas.manager.set_window_title(
+            "Radix (LSD, signed) — Space=Play/Pause, R=Reset, Q/Esc=Quit"
+        )
+    except Exception:
+        pass
+
+    PAUSE['v'] = True
     draw(arr)
-    neg = [-x for x in arr if x < 0]
+    if not plt.fignum_exists(fig.number):
+        return arr
+
+    # split into negatives (by absolute) and non-negatives
+    neg = [-x for x in arr if x < 0]   # store absolute values
     pos = [x for x in arr if x >= 0]
 
-    # visualize pos part
-    if pos:
-        max_val = max(pos)
+    # helper: in-place LSD on a list of non-negative ints, visualizing combined snapshot
+    def lsd_inplace(a, title_after_pass=None):
+        if not a:
+            return
+        out = [0] * len(a)
+        m = max(a)
         exp = 1
-        out = [0] * len(pos)
-        while max_val // exp > 0:
+        while m // exp > 0:
             count = [0] * base
-            for x in pos:
+            for x in a:
                 count[(x // exp) % base] += 1
             for i in range(1, base):
                 count[i] += count[i - 1]
-            for i in range(len(pos) - 1, -1, -1):
-                d = (pos[i] // exp) % base
+            for i in range(len(a) - 1, -1, -1):
+                d = (a[i] // exp) % base
                 count[d] -= 1
-                out[count[d]] = pos[i]
-                # draw combined snapshot (neg reversed later)
-                snapshot = [-v for v in sorted(neg, reverse=True)] + out + [0] * (len(pos) - 1 - i)
-                draw(snapshot)
-            pos[:] = out
-            draw(neg[::-1] + pos)
+                out[count[d]] = a[i]
+                # draw current combined snapshot: (-neg_sorted desc) + pos_partial
+                combined = [-v for v in sorted(neg, reverse=True)] + out + [0] * (len(a) - 1 - i)
+                draw(combined)
+                if not plt.fignum_exists(fig.number):
+                    return
+            a[:] = out
+            draw([-v for v in sorted(neg, reverse=True)] + a)  # after this digit
+            if not plt.fignum_exists(fig.number):
+                return
             exp *= base
 
-    # visualize neg part (sort abs and then reverse)
-    if neg:
-        max_val = max(neg)
+    # sort positives by LSD
+    lsd_inplace(pos)
+
+    # sort abs(negatives) by LSD, then convert back to negatives and reverse (more negative first)
+    def lsd_inplace_simple(a):
+        if not a:
+            return
+        out = [0] * len(a)
+        m = max(a)
         exp = 1
-        out = [0] * len(neg)
-        while max_val // exp > 0:
+        while m // exp > 0:
             count = [0] * base
-            for x in neg:
+            for x in a:
                 count[(x // exp) % base] += 1
             for i in range(1, base):
                 count[i] += count[i - 1]
-            for i in range(len(neg) - 1, -1, -1):
-                d = (neg[i] // exp) % base
+            for i in range(len(a) - 1, -1, -1):
+                d = (a[i] // exp) % base
                 count[d] -= 1
-                out[count[d]] = neg[i]
-                snapshot = [-v for v in out] + pos
-                draw(snapshot)
-            neg[:] = out
-            draw([-v for v in neg] + pos)
+                out[count[d]] = a[i]
+                combined = [-v for v in out] + pos
+                draw(combined)
+                if not plt.fignum_exists(fig.number):
+                    return
+            a[:] = out
+            draw([-v for v in a] + pos)
+            if not plt.fignum_exists(fig.number):
+                return
             exp *= base
 
-    neg_sorted = [-v for v in neg][::-1]  # more negative first
+    lsd_inplace_simple(neg)
+
+    neg_sorted = [-v for v in neg][::-1]
     arr[:] = neg_sorted + pos
-    draw(arr)
+    draw(arr)                                 # final frame
+    if not plt.fignum_exists(fig.number):
+        return arr
     plt.show()
     return arr

@@ -31,7 +31,9 @@ def heap_sort(arr):
     print(f"[Heap] sort in {end - start:.6f} sec")
     return a
 
-SPEED = 0.03  # pause between frames (seconds)
+SPEED = 0.05
+PAUSE = {'v': True}
+FIG = {'obj': None}
 
 def draw(arr, highlight=()):
     plt.cla()
@@ -41,10 +43,39 @@ def draw(arr, highlight=()):
             bars[i].set_color('r')
     plt.title("Heap Sort")
     plt.pause(SPEED)
+    # pause loop (Space toggles)
+    while PAUSE['v'] and FIG['obj'] is not None and plt.fignum_exists(FIG['obj'].number):
+        plt.pause(0.05)
 
 def heap_sort_viz(arr):
     plt.figure()
+    fig = plt.gcf()
+
+    FIG['obj'] = fig
+    fig.canvas.mpl_connect('close_event', lambda e: FIG.update(obj=None))
+
+    def on_key(e):
+        k = (e.key or '')
+        if k == ' ' or k.lower() == 'space':
+            PAUSE['v'] = not PAUSE['v']
+        elif k.lower() in ('r', 'q', 'escape', 'esc'):
+            plt.close(FIG['obj'] if FIG['obj'] is not None else fig)
+
+    fig.canvas.mpl_connect('key_press_event', on_key)
+
+    PAUSE['v'] = True
+    try:
+        plt.gcf().canvas.manager.set_window_title(
+            "Heap Sort — Space=Play/Pause, R=Reset, Q/Esc=Quit"
+        )
+    except Exception:
+        pass
+
+    PAUSE['v'] = True                      # start paused
     draw(arr)
+    if not plt.fignum_exists(fig.number):
+        return arr
+
     n = len(arr)
 
     def sift_down_viz(a, start, end):
@@ -52,32 +83,49 @@ def heap_sort_viz(arr):
         while (left := 2 * root + 1) <= end:
             right = left + 1
             largest = root
-            # compare with left
+
+            # compare root with left
             draw(a, (root, left))
+            if not plt.fignum_exists(fig.number):
+                return
             if a[left] > a[largest]:
                 largest = left
-            # compare with right
+
+            # compare current largest with right
             if right <= end:
                 draw(a, (largest, right))
+                if not plt.fignum_exists(fig.number):
+                    return
                 if a[right] > a[largest]:
                     largest = right
+
             if largest == root:
-                break
+                return
             a[root], a[largest] = a[largest], a[root]
-            draw(a, (root, largest))  # show swap
+            draw(a, (root, largest))       # show swap
+            if not plt.fignum_exists(fig.number):
+                return
             root = largest
 
-    # build max heap
+    # build max-heap
     for start in range((n // 2) - 1, -1, -1):
         sift_down_viz(arr, start, n - 1)
+        if not plt.fignum_exists(fig.number):
+            return arr
 
     # sort down
     for end in range(n - 1, 0, -1):
         arr[0], arr[end] = arr[end], arr[0]
-        draw(arr, (0, end))           # move max to the end
+        draw(arr, (0, end))                # move max to end
+        if not plt.fignum_exists(fig.number):
+            return arr
         sift_down_viz(arr, 0, end - 1)
+        if not plt.fignum_exists(fig.number):
+            return arr
 
-    draw(arr)
+    draw(arr)                               # final frame
+    if not plt.fignum_exists(fig.number):
+        return arr
     plt.show()
     return arr
 

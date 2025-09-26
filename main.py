@@ -65,11 +65,13 @@ def run_radix_sort() -> Tuple[str, float]:
     if VISUALIZE:
         from algorithms.radix_demo import radix_sort_lsd_nonneg_viz
         radix_sort_lsd_nonneg_viz(data.copy())
+    preview = data.copy()  # ← add
     sorted_list, t = run_and_time(radix_sort_lsd_nonneg, data, base)
-    print("\n[Radix LSD] input:", data)
+    print("\n[Radix LSD] input:", preview)                # ← use preview
     print("[Radix LSD] output:", sorted_list)
     print(f"[Radix LSD] base={base} time: {t:.6f} sec")
     return "Radix Sort (LSD)", t
+
 
 
 def run_bubble_sort() -> Tuple[str, float]:
@@ -77,11 +79,13 @@ def run_bubble_sort() -> Tuple[str, float]:
     if VISUALIZE:
         from algorithms.bubblesort_demo import bubble_sort_viz
         bubble_sort_viz(data.copy())
+    preview = data.copy()  # ← add
     sorted_list, t = run_and_time(bubble_sort, data)
-    print("\n[Bubble Sort] input:", data)
+    print("\n[Bubble Sort] input:", preview)              # ← use preview
     print("[Bubble Sort] output:", sorted_list)
     print(f"[Bubble Sort] time: {t:.6f} sec")
     return "Bubble Sort", t
+
 
 
 def run_bucket_sort() -> Tuple[str, float]:
@@ -90,14 +94,14 @@ def run_bucket_sort() -> Tuple[str, float]:
         from algorithms.BucketSort_Demo import bucket_sort_viz
         bucket_sort_viz(data.copy())
 
+    preview_in = [round(x, FLOAT_DECIMALS_TO_PRINT) for x in data]  # ← move BEFORE sort
     sorted_list, t = run_and_time(bucket_sort, data)
-    # print floats briefly
-    preview_in = [round(x, FLOAT_DECIMALS_TO_PRINT) for x in data]
     preview_out = [round(x, FLOAT_DECIMALS_TO_PRINT) for x in sorted_list]
-    print("\n[Bucket Sort] input:", preview_in)
+    print("\n[Bucket Sort] input:", preview_in)           # ← use preview_in
     print("[Bucket Sort] output:", preview_out)
     print(f"[Bucket Sort] time: {t:.6f} sec")
     return "Bucket Sort (floats)", t
+
 
 
 def run_counting_sort() -> Tuple[str, float]:
@@ -117,11 +121,13 @@ def run_insertion_sort() -> Tuple[str, float]:
     if VISUALIZE:
         from algorithms.insertsort_demo import insertion_sort_viz
         insertion_sort_viz(data.copy())
+    preview = data.copy()  # ← add
     sorted_list, t = run_and_time(insertion_sort, data)
-    print("\n[Insertion Sort] input:", data)
+    print("\n[Insertion Sort] input:", preview)           # ← use preview
     print("[Insertion Sort] output:", sorted_list)
     print(f"[Insertion Sort] time: {t:.6f} sec")
     return "Insertion Sort", t
+
 
 
 def run_heap_sort() -> Tuple[str, float]:
@@ -129,11 +135,13 @@ def run_heap_sort() -> Tuple[str, float]:
     if VISUALIZE:
         from algorithms.HeapSort_demo import heap_sort_viz
         heap_sort_viz(data.copy())
+    preview = data.copy()  # ← add
     sorted_list, t = run_and_time(heap_sort, data)
-    print("\n[Heap Sort] input:", data)
+    print("\n[Heap Sort] input:", preview)                # ← use preview
     print("[Heap Sort] output:", sorted_list)
     print(f"[Heap Sort] time: {t:.6f} sec")
     return "Heap Sort", t
+
 
 
 def run_quick_sort() -> Tuple[str, float]:
@@ -141,11 +149,13 @@ def run_quick_sort() -> Tuple[str, float]:
     if VISUALIZE:
         from algorithms.QuickSort_demo import quick_sort_viz
         quick_sort_viz(data.copy())
+    preview = data.copy()  # ← add
     sorted_list, t = run_and_time(quick_sort, data)
-    print("\n[Quick Sort] input:", data)
+    print("\n[Quick Sort] input:", preview)               # ← use preview
     print("[Quick Sort] output:", sorted_list)
     print(f"[Quick Sort] time: {t:.6f} sec")
     return "Quick Sort", t
+
 
 
 def run_quick_select_median() -> Tuple[str, float]:
@@ -227,7 +237,7 @@ def main():
         screen.blit(title_surf, (40, 30))
 
         # Hint line
-        hint = "Esc to quit"
+        hint = "Esc to quit  |  In charts: Space = Play/Pause, R = Reset, Q/Esc = Close"
         hint_surf = render_text(hint, small_font, MUTED)
         screen.blit(hint_surf, (40, 80))
 

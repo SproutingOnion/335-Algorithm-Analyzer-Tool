@@ -33,7 +33,9 @@ def timed_quick_select(arr: List[int], k: int) -> int:
     print(f"[QuickSelect] found k={k} in {end - start:.6f} sec")
     return result
 
-SPEED = 0.03  # pause between frames (seconds)
+SPEED = 0.03
+PAUSE = {'v': True}
+FIG = {'obj': None}
 
 def draw(arr, highlight=()):
     plt.cla()
@@ -43,36 +45,77 @@ def draw(arr, highlight=()):
             bars[i].set_color('r')
     plt.title("Quick Select")
     plt.pause(SPEED)
+    # pause loop (Space toggles)
+    while PAUSE['v'] and FIG['obj'] is not None and plt.fignum_exists(FIG['obj'].number):
+        plt.pause(0.05)
 
 def quick_select_viz(arr, k):
-    # k is 0-based index (0..len(arr)-1)
+    # k is 0-based index
     if not arr or k < 0 or k >= len(arr):
         return None
+
     plt.figure()
+    fig = plt.gcf()
+
+    FIG['obj'] = fig
+    fig.canvas.mpl_connect('close_event', lambda e: FIG.update(obj=None))
+
+    def on_key(e):
+        k = (e.key or '')
+        if k == ' ' or k.lower() == 'space':
+            PAUSE['v'] = not PAUSE['v']
+        elif k.lower() in ('r', 'q', 'escape', 'esc'):
+            plt.close(FIG['obj'] if FIG['obj'] is not None else fig)
+
+    fig.canvas.mpl_connect('key_press_event', on_key)
+
+    PAUSE['v'] = True
+    try:
+        plt.gcf().canvas.manager.set_window_title(
+            "Quick Select — Space=Play/Pause, R=Reset, Q/Esc=Quit"
+        )
+    except Exception:
+        pass
+
+    PAUSE['v'] = True                        # start paused
     draw(arr)
+    if not plt.fignum_exists(fig.number):
+        return None
 
     low, high = 0, len(arr) - 1
-    while low <= high:
-        pivot = arr[high]
+    while low <= high and plt.fignum_exists(fig.number):
+        pivot = arr[high]                     # Lomuto partition (pivot at high)
         i = low
-        draw(arr, (high,))                 # show pivot
+        draw(arr, (high,))                    # show pivot
+        if not plt.fignum_exists(fig.number):
+            return None
+
         for j in range(low, high):
-            draw(arr, (j, high))           # compare with pivot
+            draw(arr, (j, high))              # compare with pivot
+            if not plt.fignum_exists(fig.number):
+                return None
             if arr[j] <= pivot:
                 arr[i], arr[j] = arr[j], arr[i]
-                draw(arr, (i, j))          # show swap
+                draw(arr, (i, j))             # show swap
+                if not plt.fignum_exists(fig.number):
+                    return None
                 i += 1
+
         arr[i], arr[high] = arr[high], arr[i]
-        draw(arr, (i,))                    # pivot placed
+        draw(arr, (i,))                       # pivot placed
+        if not plt.fignum_exists(fig.number):
+            return None
 
         if k == i:
             draw(arr, (i,))
-            plt.show()
+            if plt.fignum_exists(fig.number):
+                plt.show()
             return arr[i]
         elif k < i:
             high = i - 1
         else:
             low = i + 1
 
-    plt.show()
+    if plt.fignum_exists(fig.number):
+        plt.show()
     return None
