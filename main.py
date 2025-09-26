@@ -64,13 +64,14 @@ def run_radix_sort() -> Tuple[str, float]:
     base = 10
     if VISUALIZE:
         from algorithms.radix_demo import radix_sort_lsd_nonneg_viz
-        radix_sort_lsd_nonneg_viz(data.copy())
-    preview = data.copy()  # ← add
+        radix_sort_lsd_nonneg_viz(data.copy(), base)
+    preview = data.copy()
     sorted_list, t = run_and_time(radix_sort_lsd_nonneg, data, base)
-    print("\n[Radix LSD] input:", preview)                # ← use preview
+    print("\n[Radix LSD] input:", preview)
     print("[Radix LSD] output:", sorted_list)
     print(f"[Radix LSD] base={base} time: {t:.6f} sec")
     return "Radix Sort (LSD)", t
+
 
 
 
