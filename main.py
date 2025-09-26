@@ -15,7 +15,7 @@ from algorithms.countingsort_demo import *
 from algorithms.insertsort_demo import *
 
 # --------- Config ---------
-SCREEN_W, SCREEN_H = 800, 600
+SCREEN_W, SCREEN_H = 800, 720
 BG = (18, 18, 22)
 FG = (230, 230, 235)
 ACCENT = (120, 180, 255)
